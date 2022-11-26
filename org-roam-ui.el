@@ -400,8 +400,8 @@ unchanged."
      ("FILELESS" . t))
    'nil))
 
-(defun org-roam-ui--send-graphdata ()
-  "Get roam data, make JSON, send through websocket to org-roam-ui."
+(defun org-roam-ui--make-graphdata ()
+  "Get roam data and make JSON"
   (let* ((nodes-names
           [id
            file
@@ -452,10 +452,17 @@ unchanged."
     (when old
       (message "[org-roam-ui] You are not using the latest version of org-roam.
 This database model won't be supported in the future, please consider upgrading."))
-    (websocket-send-text org-roam-ui-ws-socket (json-encode
-                                                `((type . "graphdata")
-                                                  (data . ,response))))))
+    (json-encode
+      `((type . "graphdata")
+         (data . , response)))))
 
+(defun org-roam-ui--send-graphdata ()
+  "Send roam data through websocket to org-roam-ui."
+  (websocket-send-text org-roam-ui-ws-socket (org-roam-ui--make-graphdata)))
+
+(defun org-roam-ui--export-graphdata (file)
+  "Create a JSON-file containting graphdata."
+  (write-region (org-roam-ui--make-graphdata) nil file))
 
 (defun org-roam-ui--filter-citations (links)
   "Filter out the citations from LINKS."
@@ -656,6 +663,21 @@ Hides . directories."
   (unless org-roam-ui-mode (org-roam-ui-mode))
   (funcall org-roam-ui-browser-function
            (format "http://localhost:%d" org-roam-ui-port)))
+
+;;;###autoload
+(defun org-roam-ui-export ()
+  "Export `org-roam-ui's-data for usage as static webserver."
+  (interactive)
+  (let* ((dir (read-file-name "Specify output directory:"))
+          (graphdata-file (concat (file-name-as-directory dir) "graphdata.json"))
+          (notes-dir (concat (file-name-as-directory dir) "notes/")))
+    (org-roam-ui--export-graphdata graphdata-file)
+    (make-directory notes-dir :parents)
+    (mapcar (lambda (id)
+              (let* ((cid (car id))
+                      (content (org-roam-ui--get-text cid)))
+                (write-region content nil (concat notes-dir cid) 'append)))
+      (org-roam-db-query "select id from nodes;"))))
 
 ;;;###autoload
 (defun org-roam-ui-node-zoom (&optional id speed padding)

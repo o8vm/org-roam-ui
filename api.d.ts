@@ -1,7 +1,7 @@
 export type OrgRoamGraphReponse = {
   nodes: OrgRoamNode[]
   links: OrgRoamLink[]
-  tags: string[]
+  tags: string[] | null
 }
 
 export type OrgRoamNode = {
@@ -12,9 +12,9 @@ export type OrgRoamNode = {
   pos: number
   olp: string[] | null
   properties: {
-    [key: string]: string | number
+    [key: string]: string | number | boolean | undefined
   }
-  tags: string[]
+  tags: any[]
 }
 
 export type OrgRoamLink = {
