@@ -56,6 +56,10 @@
   (expand-file-name "./out/" org-roam-ui-root-dir)
   "Directory containing org-roam-ui's web build.")
 
+(defvar org-roam-ui-public-dir
+  (expand-file-name "./public/" org-roam-ui-root-dir)
+  "Directory containing org-roam-ui's pre build.")
+
 ;; TODO: make into defcustom
 (defvar org-roam-ui-port
   35901
@@ -669,15 +673,40 @@ Hides . directories."
   "Export `org-roam-ui's-data for usage as static webserver."
   (interactive)
   (let* ((dir (read-file-name "Specify output directory:"))
-          (graphdata-file (concat (file-name-as-directory dir) "graphdata.json"))
-          (notes-dir (concat (file-name-as-directory dir) "notes/")))
+          (graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
+          (notes-dir (concat (file-name-as-directory org-roam-ui-public-dir) "notes/")))
     (org-roam-ui--export-graphdata graphdata-file)
     (make-directory notes-dir :parents)
     (mapcar (lambda (id)
               (let* ((cid (car id))
                       (content (org-roam-ui--get-text cid)))
                 (write-region content nil (concat notes-dir cid) 'append)))
-      (org-roam-db-query "select id from nodes;"))))
+      (org-roam-db-query "select id from nodes;")))
+  (let ((default-directory org-roam-ui-root-dir))
+    (shell-command
+      (mapconcat #'shell-quote-argument
+        (list "patch pages/index.tsx < index.tsx.patch" "&&" "patch util/uniorg.tsx < uniorg.tsx.patch")
+        " ")))
+  (let ((default-directory org-roam-ui-root-dir))
+    (shell-command
+      (mapconcat #'shell-quote-argument
+        (list "yarn" "&&" "yarn build" "&&" "yarn export -o" dir)
+        " ")))
+  (let ((default-directory org-roam-ui-root-dir))
+    (shell-command
+      (mapconcat #'shell-quote-argument
+        (list "patch -R pages/index.tsx < index.tsx.patch" "&&" "patch -R util/uniorg.tsx < uniorg.tsx.patch")
+        " ")))
+  (let ((default-directory org-roam-ui-root-dir))
+    (shell-command
+      (mapconcat #'shell-quote-argument
+        (list "rm graphdata.json" "&&" "rm -r public/notes")
+        " ")))
+  ;(let ((default-directory org-roam-ui-root-dir))
+  ;  shell-command "patch pages/index.tsx < index.tsx.patch")
+  ;(let ((default-directory org-roam-ui-root-dir))
+  ;  shell-command "patch util/uniorg.tsx < uniorg.tsx.patch")
+  )
 
 ;;;###autoload
 (defun org-roam-ui-node-zoom (&optional id speed padding)
