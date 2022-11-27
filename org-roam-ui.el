@@ -672,8 +672,7 @@ Hides . directories."
 (defun org-roam-ui-export ()
   "Export `org-roam-ui's-data for usage as static webserver."
   (interactive)
-  (let* ((dir (read-file-name "Specify output directory:"))
-          (graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
+  (let* ((graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
           (notes-dir (concat (file-name-as-directory org-roam-ui-public-dir) "notes/")))
     (org-roam-ui--export-graphdata graphdata-file)
     (make-directory notes-dir :parents)
@@ -687,7 +686,8 @@ Hides . directories."
       (mapconcat #'shell-quote-argument
         (list "patch pages/index.tsx < index.tsx.patch" "&&" "patch util/uniorg.tsx < uniorg.tsx.patch")
         " ")))
-  (let ((default-directory org-roam-ui-root-dir))
+  (let* ((dir (read-file-name "Specify output directory:"))
+          (default-directory org-roam-ui-root-dir))
     (shell-command
       (mapconcat #'shell-quote-argument
         (list "yarn" "&&" "yarn build" "&&" "yarn export -o" dir)
