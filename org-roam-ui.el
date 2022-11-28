@@ -681,7 +681,7 @@ Hides . directories."
                       (content (org-roam-ui--get-text cid)))
                 (write-region content nil (concat notes-dir cid) 'append)))
       (org-roam-db-query "select id from nodes;")))
-  (let* ((dir (read-file-name "Specify output directory:"))
+  (let* ((dir (expand-file-name (read-file-name "Specify output directory:")))
           (default-directory org-roam-ui-root-dir)
           (exptopt "-o"))
     (shell-command-to-string
@@ -690,7 +690,7 @@ Hides . directories."
                                "patch pages/index.tsx < index.tsx.patch\n"
                                "patch util/uniorg.tsx < uniorg.tsx.patch\n"
                                "yarn\n"
-                               "yarn build"))))
+                               "yarn build\n"))))
     (shell-command-to-string
       (mapconcat #'shell-quote-argument
         (list "yarn" "export" exptopt dir)
@@ -702,8 +702,9 @@ Hides . directories."
                                "patch -R util/uniorg.tsx < uniorg.tsx.patch\n"
                                "rm graphdata.json\n"
                                "rm -r public/notes\n"
-                               "yarn"
-                               "yarn build")))))
+                               "yarn\n"
+                               "yarn build\n"
+                               "echo done\n")))))
   ;(let ((default-directory org-roam-ui-root-dir))
   ;  shell-command "patch pages/index.tsx < index.tsx.patch")
   ;(let ((default-directory org-roam-ui-root-dir))
