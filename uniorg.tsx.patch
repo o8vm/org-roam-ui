@@ -1,18 +1,19 @@
---- /media/user01/data/lab/org-roam-ui/util/uniorg.tsx	2022-04-09 16:54:32.484871707 +0200
-+++ ./util/uniorg.tsx	2022-04-09 15:54:35.389147348 +0200
-@@ -36,18 +36,21 @@
+diff --git a/util/uniorg.tsx b/util/uniorg.tsx
+index 8e285e6..6d9adf9 100644
+--- a/util/uniorg.tsx
++++ b/util/uniorg.tsx
+@@ -37,18 +37,21 @@ export const UniOrg = (props: UniOrgProps) => {
  
    const id = encodeURIComponent(encodeURIComponent(previewNode.id))
    useEffect(() => {
 -    fetch(`http://localhost:35901/node/${id}`)
--      .then((res) => {
--        return res.text()
 +    fetch(`notes/${id}`)
-+      .then((res)  => {
-+            if(res.ok)
-+               return res.text()
-+            else
-+               return null
+       .then((res) => {
+-        return res.text()
++        if(res.ok)
++          return res.text()
++        else
++          return null
        })
        .then((res) => {
 -        if (res === '') {
@@ -22,13 +23,13 @@
 -          console.log(res)
 -          setPreviewText(res)
 -        }
-+        if (res) {   
-+            if (res === '') 
-+                return '(empty node)'
-+            else
-+                setPreviewText(res)
-+        }else
-+            setPreviewText('')
++        if (res) {
++          if (res === '')
++            return '(empty node)'
++          else
++            setPreviewText(res)
++        } else
++          setPreviewText('')
        })
        .catch((e) => {
          setPreviewText('(could not find node)')
