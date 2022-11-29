@@ -684,28 +684,23 @@ Hides . directories."
   (let* ((dir (expand-file-name (read-file-name "Specify output directory:")))
           (default-directory org-roam-ui-root-dir)
           (exptopt "-o"))
-    (message "building ...")
-    (message (shell-command-to-string
-      (format "bash -c %s" (shell-quote-argument
+    (shell-command
+      (format "bash -c %s &" (shell-quote-argument
                              (concat
                                "patch pages/index.tsx < index.tsx.patch\n"
                                "patch util/uniorg.tsx < uniorg.tsx.patch\n"
-                               "yarn\n"
-                               "yarn build\n")))))
-    (message (shell-command-to-string
-      (mapconcat #'shell-quote-argument
-        (list "yarn" "export" exptopt dir)
-        " ")))
-    (message (shell-command-to-string
-      (format "bash -c %s" (shell-quote-argument
-                             (concat
-                               "patch -R pages/index.tsx < index.tsx.patch\n"
-                               "patch -R util/uniorg.tsx < uniorg.tsx.patch\n"
+                               "echo building...\n"
+                               "yarn -s >/dev/null 2>&1\n"
+                               "yarn -s build >/dev/null 2>&1\n"
+                               "yarn -s export " dir " >/dev/null 2>&1\n"
+                               "echo cleaning...\n"
+                               "patch -R pages/index.tsx < index.tsx.patch >/dev/null 2>&1\n"
+                               "patch -R util/uniorg.tsx < uniorg.tsx.patch >/dev/null 2>&1\n"
                                "rm graphdata.json\n"
                                "rm -r public/notes\n"
-                               "yarn\n"
-                               "yarn build\n")))))
-    (message "done.")))
+                               "yarn -s >/dev/null 2>&1\n"
+                               "yarn -s build >/dev/null 2>&1\n"
+                               "echo done.\n"))))))
 
 ;;;###autoload
 (defun org-roam-ui-node-zoom (&optional id speed padding)
