@@ -684,15 +684,14 @@ Hides . directories."
   (let* ((dir (expand-file-name (read-file-name "Specify output directory:")))
           (default-directory org-roam-ui-root-dir)
           (exptopt "-o"))
+    (message "building ...")
     (message (shell-command-to-string
       (format "bash -c %s" (shell-quote-argument
                              (concat
-                               "echo building ...\n"
                                "patch pages/index.tsx < index.tsx.patch\n"
                                "patch util/uniorg.tsx < uniorg.tsx.patch\n"
                                "yarn\n"
                                "yarn build\n")))))
-    (message dir)
     (message (shell-command-to-string
       (mapconcat #'shell-quote-argument
         (list "yarn" "export" exptopt dir)
@@ -700,19 +699,13 @@ Hides . directories."
     (message (shell-command-to-string
       (format "bash -c %s" (shell-quote-argument
                              (concat
-                               "echo cleaning ...\n"
                                "patch -R pages/index.tsx < index.tsx.patch\n"
                                "patch -R util/uniorg.tsx < uniorg.tsx.patch\n"
                                "rm graphdata.json\n"
                                "rm -r public/notes\n"
                                "yarn\n"
-                               "yarn build\n"
-                               "echo done\n"))))))
-  ;(let ((default-directory org-roam-ui-root-dir))
-  ;  shell-command "patch pages/index.tsx < index.tsx.patch")
-  ;(let ((default-directory org-roam-ui-root-dir))
-  ;  shell-command "patch util/uniorg.tsx < uniorg.tsx.patch")
-  )
+                               "yarn build\n")))))
+    (message "done.")))
 
 ;;;###autoload
 (defun org-roam-ui-node-zoom (&optional id speed padding)
