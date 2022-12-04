@@ -669,7 +669,7 @@ Hides . directories."
            (format "http://localhost:%d" org-roam-ui-port)))
 
 ;;;###autoload
-(defun org-roam-dir-export ()
+(defun org-roam-ui-dir-export ()
   "Export `org-roam-ui's-data for usage as static webserver."
   (interactive)
   (let* ((graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
@@ -702,7 +702,6 @@ Hides . directories."
                                "rm -r graphdata.json public/notes exp\n"
                                "echo done.\n"))))))
 
-(setq org-roam-ui-export-repo "")
 ;;;###autoload
 (defun org-roam-ui-repo-export ()
   "Export `org-roam-ui's-data for Github pages."
@@ -713,11 +712,11 @@ Hides . directories."
     (shell-command (format "bash -c %s"
                      (shell-quote-argument
                        (concat
-                         "cp -r exp_util/* .;"
+                         "cp exp_util/* .;"
                          "git init;"
                          "git branch -M main;"
-                         "git add origin " org-roam-ui-export-repo ";"
-                         "git add .;"
+                         "git remote add origin " org-roam-ui-export-repo ";"
+                         "git add . .github .gitignore;"
                          "git pull origin main;"))))
     (org-roam-ui--export-graphdata graphdata-file)
     (make-directory notes-dir :parents)
@@ -731,13 +730,21 @@ Hides . directories."
                        (concat
                          "patch pages/index.tsx < index.tsx.patch;"
                          "patch util/uniorg.tsx < uniorg.tsx.patch;"
-                         "git add .;"
+                         "git add . .github .gitignore;"
                          "git commit -m update;"
-                         "git push;"
+                         "git push -u origin main;"
                          "patch -R pages/index.tsx < index.tsx.patch;"
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
                          "rm -rf .git/objects/*"
                          "rm -rf .git .github .gitignore grapdata.json public/notes"))))))
+;;;###autoload
+(defun org-roam-ui-export ()
+  "Export `org-roam-ui''s-data as repo or dir"
+  (interactive)
+  (if org-roam-ui-export-repo
+    (org-roam-ui-repo-export)
+    (org-roam-ui-dir-export))
+  )
 
 
 ;;;###autoload
