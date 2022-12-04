@@ -669,13 +669,13 @@ Hides . directories."
            (format "http://localhost:%d" org-roam-ui-port)))
 
 ;;;###autoload
-(defun org-roam-ui-export ()
+(defun org-roam-dir-export ()
   "Export `org-roam-ui's-data for usage as static webserver."
   (interactive)
   (let* ((graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
           (notes-dir (concat (file-name-as-directory org-roam-ui-public-dir) "notes/")))
     (org-roam-ui--export-graphdata graphdata-file)
-    (make-directory notes-dir :parents)
+    (make-directory notes-dir :parents)p
     (mapcar (lambda (id)
               (let* ((cid (car id))
                       (content (org-roam-ui--get-text cid)))
@@ -692,15 +692,52 @@ Hides . directories."
                                "echo building...\n"
                                "yarn -s >/dev/null 2>&1\n"
                                "yarn -s build >/dev/null 2>&1\n"
-                               "yarn -s export -o " dir " >/dev/null 2>&1\n"
+                               "yarn -s export >/dev/null 2>&1\n"
+                               "mkdir exp"
+                               "touch exp/.nojekyll \n"
+                               "cp -r exp/* " dir " \n"
                                "echo cleaning...\n"
                                "patch -R pages/index.tsx < index.tsx.patch >/dev/null 2>&1\n"
                                "patch -R util/uniorg.tsx < uniorg.tsx.patch >/dev/null 2>&1\n"
-                               "rm graphdata.json\n"
-                               "rm -r public/notes\n"
-                               "yarn -s >/dev/null 2>&1\n"
-                               "yarn -s build >/dev/null 2>&1\n"
+                               "rm -r graphdata.json public/notes exp\n"
                                "echo done.\n"))))))
+
+(setq org-roam-ui-export-repo "")
+;;;###autoload
+(defun org-roam-ui-repo-export ()
+  "Export `org-roam-ui's-data for Github pages."
+  (interactive)
+  (let* ((graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
+          (notes-dir (concat (file-name-as-directory org-roam-ui-public-dir) "notes/"))
+          (default-directory org-roam-ui-root-dir))
+    (shell-command (format "bash -c %s"
+                     (shell-quote-argument
+                       (concat
+                         "cp -r exp_util/* .;"
+                         "git init;"
+                         "git branch -M main;"
+                         "git add origin " org-roam-ui-export-repo ";"
+                         "git add .;"
+                         "git pull origin main;"))))
+    (org-roam-ui--export-graphdata graphdata-file)
+    (make-directory notes-dir :parents)
+    (mapcar (lambda (id)
+              (let* ((cid (car id))
+                      (content (org-roam-ui--get-text cid)))
+                (write-region content nil (concat notes-dir cid) 'append)))
+      (org-roam-db-query "select id from nodes;"))
+    (shell-command (format "bash -c %s"
+                     (shell-quote-argument
+                       (concat
+                         "patch pages/index.tsx < index.tsx.patch;"
+                         "patch util/uniorg.tsx < uniorg.tsx.patch;"
+                         "git add .;"
+                         "git commit -m update;"
+                         "git push;"
+                         "patch -R pages/index.tsx < index.tsx.patch;"
+                         "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
+                         "rm -rf .git .github .gitignore grapdata.json public/notes"))))))
+
 
 ;;;###autoload
 (defun org-roam-ui-node-zoom (&optional id speed padding)
