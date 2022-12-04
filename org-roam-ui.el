@@ -736,6 +736,7 @@ Hides . directories."
                          "git push;"
                          "patch -R pages/index.tsx < index.tsx.patch;"
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
+                         "rm -rf .git/objects/*"
                          "rm -rf .git .github .gitignore grapdata.json public/notes"))))))
 
 
