@@ -5,5 +5,5 @@ LICENSE
 .editorconfig
 out
 exp_util
-org-roma-ui*
+org-roam-ui*
 *.patch

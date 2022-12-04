@@ -23,8 +23,11 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Export
+        run: yarn export
+
       - name: add nojekyll
-        run: touch ./out/.nojekyll
+        run: touch out/.nojekyll
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
