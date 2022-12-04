@@ -684,7 +684,7 @@ Hides . directories."
   (let* ((dir (expand-file-name (read-file-name "Specify output directory:")))
           (default-directory org-roam-ui-root-dir)
           (exptopt "-o"))
-    (shell-command
+    (shell-command-to-string
       (format "bash -c %s &" (shell-quote-argument
                              (concat
                                "patch pages/index.tsx < index.tsx.patch\n"
@@ -709,7 +709,7 @@ Hides . directories."
   (let* ((graphdata-file (concat (file-name-as-directory org-roam-ui-root-dir) "graphdata.json"))
           (notes-dir (concat (file-name-as-directory org-roam-ui-public-dir) "notes/"))
           (default-directory org-roam-ui-root-dir))
-    (shell-command (format "bash -c %s"
+    (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
                          "mv exp_util/gitignore .gitignore;"
@@ -718,7 +718,7 @@ Hides . directories."
                          "git branch -M main;"
                          "git remote add origin " org-roam-ui-export-repo ";"
                          "git add . .github .gitignore;"
-                         "git pull origin main;"))))
+                         "git pull origin main;")))))
     (org-roam-ui--export-graphdata graphdata-file)
     (make-directory notes-dir :parents)
     (mapcar (lambda (id)
@@ -726,7 +726,7 @@ Hides . directories."
                       (content (org-roam-ui--get-text cid)))
                 (write-region content nil (concat notes-dir cid) 'append)))
       (org-roam-db-query "select id from nodes;"))
-    (shell-command (format "bash -c %s"
+    (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
                          "patch pages/index.tsx < index.tsx.patch;"
@@ -739,7 +739,7 @@ Hides . directories."
                          "patch -R pages/index.tsx < index.tsx.patch;"
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
                          "rm -rf .git/objects/*"
-                         "rm -rf .git .github .gitignore grapdata.json public/notes"))))))
+                         "rm -rf .git .github .gitignore grapdata.json public/notes")))))))
 ;;;###autoload
 (defun org-roam-ui-export ()
   "Export `org-roam-ui''s-data as repo or dir"
