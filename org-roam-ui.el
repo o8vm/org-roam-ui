@@ -722,7 +722,8 @@ Hides . directories."
                          "patch util/uniorg.tsx < uniorg.tsx.patch;"
                          "patch components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
                          "git add . .github .gitignore;"
-                         "git pull origin main;")))))
+                         "git pull origin main;"
+                         "rm -rf public/notes/ public/*.png;")))))
     (org-roam-ui--export-graphdata graphdata-file)
     (make-directory notes-dir :parents)
     (mapcar (lambda (id)
@@ -733,7 +734,8 @@ Hides . directories."
     (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
-                         "git add . ;"
+                         "cp -r " org-roam-directory "*.png public/;"
+                         "git add . public/*.png;"
                          "git commit -m update;"
                          "git push -u origin main;"
                          "mv .github exp_util/github;"
@@ -742,7 +744,7 @@ Hides . directories."
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
                          "patch -R components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
                          "rm -rf .git/objects/*"
-                         "rm -rf .git .github .gitignore graphdata.json public/notes;")))))))
+                         "rm -rf .git .github .gitignore graphdata.json public/notes public/*.png;")))))))
 ;;;###autoload
 (defun org-roam-ui-export ()
   "Export `org-roam-ui''s-data as repo or dir"
