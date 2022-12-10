@@ -712,11 +712,15 @@ Hides . directories."
     (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
+                         "rm -rf graphdata.json public/notes;"
                          "mv exp_util/gitignore .gitignore;"
                          "mv exp_util/github .github;"
                          "git init;"
                          "git branch -M main;"
                          "git remote add origin " org-roam-ui-export-repo ";"
+                         "patch pages/index.tsx < index.tsx.patch;"
+                         "patch util/uniorg.tsx < uniorg.tsx.patch;"
+                         "patch components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
                          "git add . .github .gitignore;"
                          "git pull origin main;")))))
     (org-roam-ui--export-graphdata graphdata-file)
@@ -729,17 +733,16 @@ Hides . directories."
     (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
-                         "patch pages/index.tsx < index.tsx.patch;"
-                         "patch util/uniorg.tsx < uniorg.tsx.patch;"
-                         "git add . .github .gitignore;"
+                         "git add . ;"
                          "git commit -m update;"
                          "git push -u origin main;"
                          "mv .github exp_util/github;"
                          "mv .gitignore exp_util/gitignore;"
                          "patch -R pages/index.tsx < index.tsx.patch;"
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
+                         "patch -R components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
                          "rm -rf .git/objects/*"
-                         "rm -rf .git .github .gitignore grapdata.json public/notes")))))))
+                         "rm -rf .git .github .gitignore graphdata.json public/notes;")))))))
 ;;;###autoload
 (defun org-roam-ui-export ()
   "Export `org-roam-ui''s-data as repo or dir"
