@@ -7,7 +7,7 @@ index 73830ce..04493d7 100644
    console.log(previewNode)
    const getText = () => {
 -    fetch(`http://localhost:35901/node/${id}`)
-+    fetch(`node/${id}`)
++    fetch(`notes/${id}`)
        .then((res) => {
          return res.text()
        })
