@@ -1,0 +1,13 @@
+diff --git a/components/Sidebar/Link.tsx b/components/Sidebar/Link.tsx
+index 73830ce..04493d7 100644
+--- a/components/Sidebar/Link.tsx
++++ b/components/Sidebar/Link.tsx
+@@ -151,7 +151,7 @@ export const PreviewLink = (props: LinkProps) => {
+   const extraNoteStyle = outline ? outlineNoteStyle : viewerNoteStyle
+   console.log(previewNode)
+   const getText = () => {
+-    fetch(`http://localhost:35901/node/${id}`)
++    fetch(`node/${id}`)
+       .then((res) => {
+         return res.text()
+       })

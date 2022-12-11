@@ -721,6 +721,7 @@ Hides . directories."
                          "patch pages/index.tsx < index.tsx.patch;"
                          "patch util/uniorg.tsx < uniorg.tsx.patch;"
                          "patch components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
+                         "patch components/Sidebar/Link.tsx < Link.tsx.patch;"
                          "git add . .github .gitignore;"
                          "git pull origin main;"
                          "rm -rf public/notes/ public/*.png;")))))
@@ -743,6 +744,7 @@ Hides . directories."
                          "patch -R pages/index.tsx < index.tsx.patch;"
                          "patch -R util/uniorg.tsx < uniorg.tsx.patch;"
                          "patch -R components/Sidebar/OrgImage.tsx < OrgImage.tsx.patch;"
+                         "patch -R components/Sidebar/Link.tsx < Link.tsx.patch;"
                          "rm -rf .git/objects/*"
                          "rm -rf .git .github .gitignore graphdata.json public/notes public/*.png;")))))))
 ;;;###autoload
