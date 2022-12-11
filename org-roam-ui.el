@@ -734,7 +734,7 @@ Hides . directories."
     (message (shell-command-to-string (format "bash -c %s"
                      (shell-quote-argument
                        (concat
-                         "cp -r " org-roam-directory "*.png public/;"
+                         "cp -r " org-roam-directory "/*.png public/;"
                          "git add . public/*.png;"
                          "git commit -m update;"
                          "git push -u origin main;"
